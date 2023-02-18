@@ -37,7 +37,7 @@ var rootCmd = cobra.Command{
 	Short: "gohttp is a simple http cmd provider",
 	Long:  "gohttp is a simple http cmd provider. Avalabel methods is GET, POST.",
 	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 2 {
+		if len(args) < 1 {
 			return ErrInvalidArgsLength
 		} else {
 			if is.URL.Validate(args[0]) != nil {
@@ -46,11 +46,10 @@ var rootCmd = cobra.Command{
 			URL = args[0]
 
 			for _, m := range avalabelMethods {
-				if args[1] == m {
-					ReqMethod = args[1]
+				if ReqMethod == m {
 					if ReqMethod == "POST" {
-						if len(args) == 3 {
-							j, err := jsonHandler(args[2])
+						if len(args) == 2 {
+							j, err := jsonHandler(args[1])
 							if err != nil {
 								return ErrInvalidJsonData
 							}
@@ -104,6 +103,7 @@ var rootCmd = cobra.Command{
 			}
 		}
 
+		metaData()
 		b = bytes.NewBuffer(buf)
 		_, err = b.WriteTo(os.Stdout)
 		if err != nil {
@@ -113,7 +113,6 @@ var rootCmd = cobra.Command{
 }
 
 func Execute() error {
-	meteData()
 	return rootCmd.Execute()
 }
 
@@ -152,8 +151,10 @@ func line(s rune, n int) {
 	fmt.Println()
 }
 
-func meteData() {
+func metaData() {
 	line('-', 32)
+	t := time.Now()
+	fmt.Println("TIME:", fmt.Sprintf("%d:%d:%d %d:%d:%d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second()))
 	fmt.Println("URL:", URL)
 	fmt.Println("METHOD:", ReqMethod)
 	if JSON == "" {
